@@ -32,6 +32,98 @@ defmodule EexFormatterTest do
            ]
   end
 
+  test "generate spaces for indention" do
+    assert 10 |> EexFormatter.generate_spaces() === "          "
+  end
+
+  test "generate empty string for 0 spaces" do
+    assert 0 |> EexFormatter.generate_spaces() === ""
+  end
+
+  test "prettify simple tag with not attributes" do
+    tag = "<head></head>"
+
+    assert tag |> EexFormatter.get_attributes() |> EexFormatter.prettify_html() === """
+           <head/>
+           """
+  end
+
+  test "prettify html without eex" do
+    tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
+
+    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+
+    assert parsed |> EexFormatter.prettify_html() === """
+           <link
+             rel="stylesheet"
+             href="1"
+           />
+           """
+  end
+
+  test "prettify html with children without eex" do
+    tag = """
+    <a href="https://phoenixframework.org/" class="phx-logo">
+      <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
+    </a>
+    """
+
+    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+    prettified = parsed |> EexFormatter.prettify_html()
+
+    assert prettified === """
+           <a
+             href="https://phoenixframework.org/"
+             class="phx-logo"
+           >
+             <img
+               src="1"
+               alt="Phoenix Framework Logo"
+             />
+           </a>
+           """
+  end
+
+  test "prettify multiple nested html" do
+    html = """
+    <section class="container"><nav role="navigation"><ul><li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li></ul></nav><a href="https://phoenixframework.org/" class="phx-logo"><img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/></a></section>
+    """
+
+    parsed = html |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+    prettified = parsed |> EexFormatter.prettify_html()
+
+    IO.puts("\n" <> prettified)
+
+    assert prettified === """
+           <section
+             class="container"
+           >
+             <nav
+               role="navigation"
+             >
+               <ul>
+                 <li>
+                   <a
+                     href="https://hexdocs.pm/phoenix/overview.html"
+                   >
+                     Get Started
+                   </a>
+                 </li>
+               </ul>
+             </nav>
+             <a
+               href="https://phoenixframework.org/"
+               class="phx-logo"
+             >
+               <img
+                 src="1"
+                 alt="Phoenix Framework Logo"
+               />
+             </a>
+           </section>
+           """
+  end
+
   test "tokenize tags" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
 
