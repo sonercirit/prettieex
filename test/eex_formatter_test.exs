@@ -16,7 +16,7 @@ defmodule EexFormatterTest do
     assert EexFormatter.is_doctype(tag) === false
   end
 
-  test "should clean eex" do
+  test "clean eex" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
     placeholder = EexFormatter.generate_placeholder()
 
@@ -29,6 +29,16 @@ defmodule EexFormatterTest do
 
     assert EexFormatter.clean_eex(tag, "1") |> EexFormatter.get_attributes() === [
              {"link", [{"rel", "stylesheet"}, {"href", "1"}], []}
+           ]
+  end
+
+  test "tokenize tags" do
+    tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
+
+    assert EexFormatter.tokenize(tag) === [
+             {:text, '<link rel="stylesheet" href="'},
+             {:expr, 1, '=', ' Routes.static_path(@conn, "/css/app.css") ', false},
+             {:text, '"/>'}
            ]
   end
 end

@@ -31,4 +31,9 @@ defmodule EexFormatter do
   def get_attributes(tag) do
     Floki.parse_document!(tag)
   end
+
+  def tokenize(tag) do
+    {:ok, result} = tag |> EEx.Tokenizer.tokenize(1)
+    result
+  end
 end
