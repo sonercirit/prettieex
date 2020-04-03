@@ -27,7 +27,7 @@ defmodule EexFormatterTest do
   test "parses html" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
 
-    assert tag |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes() === [
+    assert tag |> EexFormatter.clean_eex("1") |> EexFormatter.parse_html() === [
              {"link", [{"rel", "stylesheet"}, {"href", "1"}], []}
            ]
   end
@@ -43,7 +43,7 @@ defmodule EexFormatterTest do
   test "prettify simple tag with not attributes" do
     tag = "<head></head>"
 
-    assert tag |> EexFormatter.get_attributes() |> EexFormatter.prettify_html() === """
+    assert tag |> EexFormatter.parse_html() |> EexFormatter.prettify_html() === """
            <head/>
            """
   end
@@ -51,7 +51,7 @@ defmodule EexFormatterTest do
   test "prettify html without eex" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
 
-    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.parse_html()
 
     assert parsed |> EexFormatter.prettify_html() === """
            <link
@@ -68,7 +68,7 @@ defmodule EexFormatterTest do
     </a>
     """
 
-    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+    parsed = tag |> EexFormatter.clean_eex("1") |> EexFormatter.parse_html()
     prettified = parsed |> EexFormatter.prettify_html()
 
     assert prettified === """
@@ -89,7 +89,7 @@ defmodule EexFormatterTest do
     <section class="container"><nav role="navigation"><ul><li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li></ul></nav><a href="https://phoenixframework.org/" class="phx-logo"><img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/></a></section>
     """
 
-    parsed = html |> EexFormatter.clean_eex("1") |> EexFormatter.get_attributes()
+    parsed = html |> EexFormatter.clean_eex("1") |> EexFormatter.parse_html()
     prettified = parsed |> EexFormatter.prettify_html()
 
     IO.puts("\n" <> prettified)

@@ -28,7 +28,7 @@ defmodule EexFormatter do
     tag |> String.replace(~r/<%.*?%>/s, placeholder)
   end
 
-  def get_attributes(tag) do
+  def parse_html(tag) do
     tag |> Floki.parse_document!()
   end
 
