@@ -15,4 +15,8 @@ defmodule EexFormatter do
   def hello do
     :world
   end
+
+  def is_doctype(tag) do
+    String.contains?(tag, "<!")
+  end
 end
