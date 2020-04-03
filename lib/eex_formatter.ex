@@ -16,6 +16,13 @@ defmodule EexFormatter do
     :world
   end
 
+  def process_file(name) do
+    placeholder = generate_placeholder()
+    result = name |> File.read!() |> clean_eex(placeholder) |> parse_html() |> prettify_html()
+
+    name |> File.write!(result)
+  end
+
   def is_doctype(tag) do
     tag |> String.contains?("<!")
   end
