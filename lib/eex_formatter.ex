@@ -17,7 +17,7 @@ defmodule EexFormatter do
   end
 
   def is_doctype(tag) do
-    String.contains?(tag, "<!")
+    tag |> String.contains?("<!")
   end
 
   def generate_placeholder do
@@ -29,7 +29,7 @@ defmodule EexFormatter do
   end
 
   def get_attributes(tag) do
-    Floki.parse_document!(tag)
+    tag |> Floki.parse_document!()
   end
 
   def tokenize(tag) do
