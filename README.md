@@ -1,4 +1,4 @@
-# EexFormatter
+# PrettiEEx
 
 **TODO: Add description**
 

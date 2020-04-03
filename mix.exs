@@ -1,9 +1,9 @@
-defmodule EexFormatter.MixProject do
+defmodule PrettiEEx.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :eex_formatter,
+      app: :prettieex,
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,

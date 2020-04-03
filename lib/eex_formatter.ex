@@ -1,20 +1,5 @@
-defmodule EexFormatter do
-  @moduledoc """
-  Documentation for `EexFormatter`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> EexFormatter.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+defmodule EExFormatter do
+  @moduledoc false
 
   def process_file(name) do
     placeholder = generate_placeholder()

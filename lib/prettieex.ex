@@ -3,6 +3,6 @@ defmodule Mix.Tasks.Prettieex do
   use Mix.Task
 
   def run(args) do
-    args |> List.first() |> EexFormatter.process_file()
+    args |> List.first() |> EExFormatter.process_file()
   end
 end
