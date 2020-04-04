@@ -254,4 +254,23 @@ defmodule EExFormatterTest do
            </p>
            """
   end
+
+  test "ignore empty string" do
+    html = """
+    <body><script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script></body>
+    """
+
+    assert html
+           |> EExFormatter.clean_eex()
+           |> EExFormatter.parse_html()
+           |> EExFormatter.prettify_html() === """
+           <body>
+             <script
+               type="text/javascript"
+               src="<placeholder/>"
+             >
+             </script>
+           </body>
+           """
+  end
 end

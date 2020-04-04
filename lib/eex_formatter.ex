@@ -77,6 +77,10 @@ defmodule EExFormatter do
     {indention, curr <> result}
   end
 
+  def prettify_tag("", acc) do
+    acc
+  end
+
   def prettify_tag(text, acc) do
     {indention, curr} = acc
     spaces = indention |> generate_spaces()
