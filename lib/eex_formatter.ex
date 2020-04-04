@@ -17,7 +17,7 @@ defmodule EExFormatter do
   end
 
   def clean_eex(tag, placeholder) do
-    tag |> String.replace(~r/<%.*?%>/s, placeholder)
+    tag |> String.replace(~r/<%[^#|%].*?%>/s, placeholder)
   end
 
   def parse_html(html) do
@@ -81,7 +81,7 @@ defmodule EExFormatter do
   def prettify_tag(text, acc) do
     {indention, curr} = acc
     spaces = indention |> generate_spaces()
-    text = text |> String.trim()
+    text = text |> String.trim() |> String.replace("\n", "\n#{spaces}")
     {indention, "#{curr}#{spaces}#{text}\n"}
   end
 

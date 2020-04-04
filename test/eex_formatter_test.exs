@@ -171,6 +171,47 @@ defmodule EExFormatterTest do
            ]
   end
 
+  test "clean correct expressions for different types of eex syntax" do
+    html = """
+    <p class="alert alert-info" role="alert">
+    <% "1" %>
+    <%= "2" %>
+    <%% "3" %>
+    <%# "4" %>
+    </p>
+    <p class="alert alert-danger" role="alert"><%= get_flash @conn, :error %></p>
+    <% "1" %>
+    <%= "2" %>
+    <%% "3" %>
+    <%# "4" %>
+    """
+
+    assert html
+           |> EExFormatter.clean_eex("1")
+           |> EExFormatter.parse_html()
+           |> EExFormatter.prettify_html() === """
+           <p
+             class="alert alert-info"
+             role="alert"
+           >
+             1
+             1
+             <%% "3" %>
+             <%# "4" %>
+           </p>
+           <p
+             class="alert alert-danger"
+             role="alert"
+           >
+             1
+           </p>
+           1
+           1
+           <%% "3" %>
+           <%# "4" %>
+           """
+  end
+
   test "prettify tokenized expressions" do
     html = """
     <p class="alert alert-info" role="alert"><%= get_flash @conn, :info %></p>
