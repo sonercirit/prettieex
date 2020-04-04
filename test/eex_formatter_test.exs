@@ -173,4 +173,13 @@ defmodule EExFormatterTest do
              "render(@view_module, @view_template, assigns)"
            ]
   end
+
+  test "prettify multi-line expression" do
+    expr = "<%= if true do true else false end %>"
+
+    assert expr
+           |> EExFormatter.tokenize()
+           |> EExFormatter.get_expressions()
+           |> EExFormatter.prettify_expressions() === ["if true do\n  true\nelse\n  false\nend"]
+  end
 end
