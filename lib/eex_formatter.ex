@@ -2,7 +2,16 @@ defmodule EExFormatter do
   @moduledoc false
 
   def process_file(name) do
-    result = name |> File.read!() |> clean_eex() |> parse_html() |> prettify_html()
+    html = name |> File.read!()
+
+    expressions =
+      html
+      |> EExFormatter.tokenize()
+      |> EExFormatter.get_expressions()
+      |> EExFormatter.prettify_expressions()
+
+    result =
+      html |> clean_eex() |> parse_html() |> prettify_html() |> replace_expressions(expressions)
 
     name |> File.write!(result)
   end
