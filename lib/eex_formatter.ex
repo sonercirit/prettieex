@@ -76,7 +76,7 @@ defmodule EExFormatter do
       end
 
     result =
-      if children === [] do
+      if children === [] || children === [""] do
         "#{result}/>\n"
       else
         children = {nil, children} |> prettify_html(indention + 2)
@@ -84,10 +84,6 @@ defmodule EExFormatter do
       end
 
     {indention, curr <> result}
-  end
-
-  def prettify_tag("", acc) do
-    acc
   end
 
   def prettify_tag(text, acc) do

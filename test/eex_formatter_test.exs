@@ -271,8 +271,7 @@ defmodule EExFormatterTest do
            <body>
              <script
                type="text/javascript"
-               src="<placeholder/>">
-             </script>
+               src="<placeholder/>"/>
            </body>
            """
   end
