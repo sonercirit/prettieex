@@ -142,4 +142,18 @@ defmodule EExFormatterTest do
              {:text, '"/>'}
            ]
   end
+
+  test "find expressions in tokenized data" do
+    html = """
+    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+    <%= render @view_module, @view_template, assigns %>
+    """
+
+    assert EExFormatter.tokenize(html) |> EExFormatter.get_expressions() === [
+             {:expr, 1, '=', ' get_flash(@conn, :info) ', false},
+             {:expr, 2, '=', ' get_flash(@conn, :error) ', false},
+             {:expr, 3, '=', ' render @view_module, @view_template, assigns ', false}
+           ]
+  end
 end

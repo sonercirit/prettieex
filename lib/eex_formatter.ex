@@ -102,8 +102,20 @@ defmodule EExFormatter do
     result
   end
 
-  def tokenize(tag) do
-    {:ok, result} = tag |> EEx.Tokenizer.tokenize(1)
+  def tokenize(html) do
+    {:ok, result} = html |> EEx.Tokenizer.tokenize(1)
     result
+  end
+
+  def is_expression({:expr, _, _, _, _}) do
+    true
+  end
+
+  def is_expression(_) do
+    false
+  end
+
+  def get_expressions(tokens) do
+    tokens |> Enum.filter(fn token -> token |> is_expression() end)
   end
 end
