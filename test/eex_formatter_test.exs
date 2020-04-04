@@ -136,7 +136,7 @@ defmodule EExFormatterTest do
   test "tokenize tags" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
 
-    assert EExFormatter.tokenize(tag) === [
+    assert tag |> EExFormatter.tokenize() === [
              {:text, '<link rel="stylesheet" href="'},
              {:expr, 1, '=', ' Routes.static_path(@conn, "/css/app.css") ', false},
              {:text, '"/>'}
@@ -150,7 +150,7 @@ defmodule EExFormatterTest do
     <%= render @view_module, @view_template, assigns %>
     """
 
-    assert EExFormatter.tokenize(html) |> EExFormatter.get_expressions() === [
+    assert html |> EExFormatter.tokenize() |> EExFormatter.get_expressions() === [
              {:expr, 1, '=', ' get_flash(@conn, :info) ', false},
              {:expr, 2, '=', ' get_flash(@conn, :error) ', false},
              {:expr, 3, '=', ' render @view_module, @view_template, assigns ', false}
