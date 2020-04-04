@@ -61,7 +61,7 @@ defmodule EExFormatter do
     result =
       if !(attributes === []) do
         attributes = attributes |> prettify_attributes(indention + 2)
-        result <> attributes <> "\n" <> spaces
+        result <> attributes
       else
         result
       end
