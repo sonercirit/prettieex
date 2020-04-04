@@ -5,12 +5,12 @@
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `eex_formatter` to your list of dependencies in `mix.exs`:
+by adding `prettieex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:eex_formatter, "~> 0.1.0"}
+    {:prettieex, "~> 0.1.0"}
   ]
 end
 ```
