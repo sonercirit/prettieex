@@ -2,6 +2,10 @@ defmodule EExFormatterTest do
   use ExUnit.Case
   doctest EExFormatter
 
+  defp sanitize_prettify_expression(expressions) do
+    expressions |> Enum.map(fn x -> x <> "\n" end)
+  end
+
   test "detects doctype tag" do
     tag = "<!DOCTYPE hmtl>"
     assert tag |> EExFormatter.is_doctype() === true
@@ -221,9 +225,9 @@ defmodule EExFormatterTest do
            |> EExFormatter.tokenize()
            |> EExFormatter.get_expressions()
            |> EExFormatter.prettify_expressions() === [
-             "get_flash(@conn, :info)",
-             "get_flash(@conn, :error)",
-             "render(@view_module, @view_template, assigns)"
+             "<%= get_flash(@conn, :info) %>",
+             "<%= get_flash(@conn, :error) %>",
+             "<%= render(@view_module, @view_template, assigns) %>"
            ]
   end
 
@@ -233,7 +237,18 @@ defmodule EExFormatterTest do
     assert expr
            |> EExFormatter.tokenize()
            |> EExFormatter.get_expressions()
-           |> EExFormatter.prettify_expressions() === ["if true do\n  true\nelse\n  false\nend"]
+           |> EExFormatter.prettify_expressions()
+           |> sanitize_prettify_expression() === [
+             """
+             <%=
+               if true do
+                 true
+               else
+                 false
+               end
+             %>
+             """
+           ]
   end
 
   test "squish multi-line text" do
@@ -271,6 +286,40 @@ defmodule EExFormatterTest do
              >
              </script>
            </body>
+           """
+  end
+
+  test "replace formatted expressions with placeholders" do
+    html = """
+    <p class="alert alert-info" role="<%= true %>"><%= get_flash @conn, :info %></p>
+    <p class="alert alert-danger" role="alert"><%= get_flash @conn, :error %></p>
+    <% render @view_module, @view_template, assigns %>
+    """
+
+    expressions =
+      html
+      |> EExFormatter.tokenize()
+      |> EExFormatter.get_expressions()
+      |> EExFormatter.prettify_expressions()
+
+    assert html
+           |> EExFormatter.clean_eex()
+           |> EExFormatter.parse_html()
+           |> EExFormatter.prettify_html()
+           |> EExFormatter.replace_expressions(expressions) === """
+           <p
+             class="alert alert-info"
+             role="<%= true %>"
+           >
+             <%= get_flash(@conn, :info) %>
+           </p>
+           <p
+             class="alert alert-danger"
+             role="alert"
+           >
+             <%= get_flash(@conn, :error) %>
+           </p>
+           <% render(@view_module, @view_template, assigns) %>
            """
   end
 end

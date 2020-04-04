@@ -128,10 +128,42 @@ defmodule EExFormatter do
     tokens |> Enum.filter(fn token -> token |> is_expression() end)
   end
 
+  def get_expression_pre_suff('=') do
+    {"<%=", "%>"}
+  end
+
+  def get_expression_pre_suff([]) do
+    {"<%", "%>"}
+  end
+
   def prettify_expressions(expressions) do
     expressions
     |> Enum.map(fn expression ->
-      expression |> elem(3) |> to_string() |> Code.format_string!() |> Enum.join()
+      {pre, suff} = expression |> elem(2) |> get_expression_pre_suff()
+
+      prettified_expression =
+        expression |> elem(3) |> to_string() |> Code.format_string!() |> Enum.join()
+
+      is_multiline =
+        if prettified_expression |> String.contains?("\n") do
+          true
+        else
+          false
+        end
+
+      if is_multiline do
+        prettified_expression = prettified_expression |> String.replace("\n", "\n  ")
+        "#{pre}\n  #{prettified_expression}\n#{suff}"
+      else
+        "#{pre} #{prettified_expression} #{suff}"
+      end
+    end)
+  end
+
+  def replace_expressions(html, expressions) do
+    expressions
+    |> Enum.reduce(html, fn expression, html ->
+      html |> String.replace("<placeholder/>", expression, global: false)
     end)
   end
 end
