@@ -157,6 +157,20 @@ defmodule EExFormatterTest do
            ]
   end
 
+  test "get correct expressions for different types of eex syntax" do
+    expr = """
+    <% "1" %>
+    <%= "2" %>
+    <%% "3" %>
+    <%# "4" %>
+    """
+
+    assert expr |> EExFormatter.tokenize() |> EExFormatter.get_expressions() === [
+             {:expr, 1, [], ' "1" ', false},
+             {:expr, 2, '=', ' "2" ', false}
+           ]
+  end
+
   test "prettify tokenized expressions" do
     html = """
     <p class="alert alert-info" role="alert"><%= get_flash @conn, :info %></p>
