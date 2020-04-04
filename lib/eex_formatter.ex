@@ -136,6 +136,14 @@ defmodule EExFormatter do
     {"<%", "%>"}
   end
 
+  def is_multiline_expression(expression) do
+    if expression |> String.contains?("\n") do
+      true
+    else
+      false
+    end
+  end
+
   def prettify_expressions(expressions) do
     expressions
     |> Enum.map(fn expression ->
@@ -144,14 +152,7 @@ defmodule EExFormatter do
       prettified_expression =
         expression |> elem(3) |> to_string() |> Code.format_string!() |> Enum.join()
 
-      is_multiline =
-        if prettified_expression |> String.contains?("\n") do
-          true
-        else
-          false
-        end
-
-      if is_multiline do
+      if prettified_expression |> is_multiline_expression() do
         prettified_expression = prettified_expression |> String.replace("\n", "\n  ")
         "#{pre}\n  #{prettified_expression}\n#{suff}"
       else
@@ -160,10 +161,54 @@ defmodule EExFormatter do
     end)
   end
 
-  def replace_expressions(html, expressions) do
-    expressions
-    |> Enum.reduce(html, fn expression, html ->
-      html |> String.replace("<placeholder/>", expression, global: false)
+  def get_expression([head | tail]) do
+    [head | tail]
+  end
+
+  def get_expression([]) do
+    ["" | []]
+  end
+
+  def append_spaces_to_multiline_expression(spaces, expression) do
+    splits =
+      expression
+      |> String.split("\n")
+
+    [head | tail] = splits
+
+    tail
+    |> Enum.reduce(head, fn split, acc ->
+      "#{acc}\n#{spaces}#{split}"
     end)
+  end
+
+  def replace_expression(split, acc) do
+    {curr, expressions} = acc
+    [expression | tail] = expressions |> get_expression()
+
+    expression =
+      if expression |> is_multiline_expression() do
+        split
+        |> String.graphemes()
+        |> Enum.reverse()
+        |> Enum.find_index(fn x -> x === "\n" end)
+        |> generate_spaces()
+        |> append_spaces_to_multiline_expression(expression)
+      else
+        expression
+      end
+
+    {"#{curr}#{split}#{expression}", tail}
+  end
+
+  def replace_expressions(html, expressions) do
+    {result, _} =
+      html
+      |> String.split("<placeholder/>")
+      |> Enum.reduce({"", expressions}, fn split, acc ->
+        split |> replace_expression(acc)
+      end)
+
+    result
   end
 end

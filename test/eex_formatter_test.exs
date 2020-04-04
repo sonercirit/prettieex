@@ -322,4 +322,41 @@ defmodule EExFormatterTest do
            <% render(@view_module, @view_template, assigns) %>
            """
   end
+
+  test "replace multi-line expression with placeholder" do
+    html = """
+    <p class="alert alert-info" role="<%= if true do "exp1" else false end %>"><% if true do "exp2" else false end %></p>
+    """
+
+    expressions =
+      html
+      |> EExFormatter.tokenize()
+      |> EExFormatter.get_expressions()
+      |> EExFormatter.prettify_expressions()
+
+    assert html
+           |> EExFormatter.clean_eex()
+           |> EExFormatter.parse_html()
+           |> EExFormatter.prettify_html()
+           |> EExFormatter.replace_expressions(expressions) === """
+           <p
+             class="alert alert-info"
+             role="<%=
+                     if true do
+                       "exp1"
+                     else
+                       false
+                     end
+                   %>"
+           >
+             <%
+               if true do
+                 "exp2"
+               else
+                 false
+               end
+             %>
+           </p>
+           """
+  end
 end
