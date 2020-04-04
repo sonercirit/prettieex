@@ -3,6 +3,8 @@ defmodule Mix.Tasks.Prettieex do
   use Mix.Task
 
   def run(args) do
-    args |> List.first() |> EExFormatter.process_file()
+    [path | _] = args
+    abspath = path |> Path.expand()
+    Path.wildcard(abspath) |> Enum.each(fn file -> file |> EExFormatter.process_file() end)
   end
 end
