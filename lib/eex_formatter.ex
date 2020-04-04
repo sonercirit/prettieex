@@ -20,8 +20,19 @@ defmodule EExFormatter do
     tag |> String.replace(~r/<%.*?%>/s, placeholder)
   end
 
-  def parse_html(tag) do
-    tag |> Floki.parse_document!()
+  def parse_html(html) do
+    doctype = ~r/<!doctype (.*?)>/is |> Regex.run(html)
+
+    doctype =
+      if doctype === nil do
+        nil
+      else
+        doctype |> List.last()
+      end
+
+    html = html |> Floki.parse_document!()
+
+    {doctype, html}
   end
 
   def generate_spaces(0) do
@@ -60,7 +71,7 @@ defmodule EExFormatter do
       if children === [] do
         "#{result}/>\n"
       else
-        children = children |> prettify_html(indention + 2)
+        children = {nil, children} |> prettify_html(indention + 2)
         "#{result}>\n#{children}#{spaces}</#{tag}>\n"
       end
 
@@ -74,12 +85,17 @@ defmodule EExFormatter do
     {indention, "#{curr}#{spaces}#{text}\n"}
   end
 
-  def prettify_html(_, indention \\ 0)
+  def prettify_html({doctype, parsed}, indention \\ 0) do
+    initial =
+      if doctype === nil do
+        ""
+      else
+        "<!DOCTYPE #{doctype}>\n"
+      end
 
-  def prettify_html(parsed, indention) do
     {_, result} =
       parsed
-      |> Enum.reduce({indention, ""}, fn element, acc ->
+      |> Enum.reduce({indention, initial}, fn element, acc ->
         element |> prettify_tag(acc)
       end)
 

@@ -23,9 +23,8 @@ defmodule EExFormatterTest do
   test "parses html" do
     tag = "<link rel=\"stylesheet\" href=\"<%= Routes.static_path(@conn, \"/css/app.css\") %>\"/>"
 
-    assert tag |> EExFormatter.clean_eex("1") |> EExFormatter.parse_html() === [
-             {"link", [{"rel", "stylesheet"}, {"href", "1"}], []}
-           ]
+    assert tag |> EExFormatter.clean_eex("1") |> EExFormatter.parse_html() ===
+             {nil, [{"link", [{"rel", "stylesheet"}, {"href", "1"}], []}]}
   end
 
   test "generate spaces for indention" do
@@ -115,6 +114,22 @@ defmodule EExFormatterTest do
                />
              </a>
            </section>
+           """
+  end
+
+  test "keep !DOCTYPE if in first line" do
+    html = """
+    <!DOCTYPE html><html lang="en"/>
+    """
+
+    parsed = html |> EExFormatter.clean_eex("1") |> EExFormatter.parse_html()
+    prettified = parsed |> EExFormatter.prettify_html()
+
+    assert prettified === """
+           <!DOCTYPE html>
+           <html
+             lang="en"
+           />
            """
   end
 
