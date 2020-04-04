@@ -55,8 +55,7 @@ defmodule EExFormatterTest do
     assert parsed |> EExFormatter.prettify_html() === """
            <link
              rel="stylesheet"
-             href="1"
-           />
+             href="1"/>
            """
   end
 
@@ -73,12 +72,10 @@ defmodule EExFormatterTest do
     assert prettified === """
            <a
              href="https://phoenixframework.org/"
-             class="phx-logo"
-           >
+             class="phx-logo">
              <img
                src="1"
-               alt="Phoenix Framework Logo"
-             />
+               alt="Phoenix Framework Logo"/>
            </a>
            """
   end
@@ -93,16 +90,13 @@ defmodule EExFormatterTest do
 
     assert prettified === """
            <section
-             class="container"
-           >
+             class="container">
              <nav
-               role="navigation"
-             >
+               role="navigation">
                <ul>
                  <li>
                    <a
-                     href="https://hexdocs.pm/phoenix/overview.html"
-                   >
+                     href="https://hexdocs.pm/phoenix/overview.html">
                      Get Started
                    </a>
                  </li>
@@ -110,12 +104,10 @@ defmodule EExFormatterTest do
              </nav>
              <a
                href="https://phoenixframework.org/"
-               class="phx-logo"
-             >
+               class="phx-logo">
                <img
                  src="1"
-                 alt="Phoenix Framework Logo"
-               />
+                 alt="Phoenix Framework Logo"/>
              </a>
            </section>
            """
@@ -132,8 +124,7 @@ defmodule EExFormatterTest do
     assert prettified === """
            <!DOCTYPE html>
            <html
-             lang="en"
-           />
+             lang="en"/>
            """
   end
 
@@ -196,16 +187,14 @@ defmodule EExFormatterTest do
            |> EExFormatter.prettify_html() === """
            <p
              class="alert alert-info"
-             role="alert"
-           >
+             role="alert">
              <placeholder/>
              <placeholder/>
              <%% "3" %> <%# "4" %>
            </p>
            <p
              class="alert alert-danger"
-             role="alert"
-           >
+             role="alert">
              <placeholder/>
            </p>
            <placeholder/>
@@ -282,8 +271,7 @@ defmodule EExFormatterTest do
            <body>
              <script
                type="text/javascript"
-               src="<placeholder/>"
-             >
+               src="<placeholder/>">
              </script>
            </body>
            """
@@ -309,14 +297,12 @@ defmodule EExFormatterTest do
            |> EExFormatter.replace_expressions(expressions) === """
            <p
              class="alert alert-info"
-             role="<%= true %>"
-           >
+             role="<%= true %>">
              <%= get_flash(@conn, :info) %>
            </p>
            <p
              class="alert alert-danger"
-             role="alert"
-           >
+             role="alert">
              <%= get_flash(@conn, :error) %>
            </p>
            <% render(@view_module, @view_template, assigns) %>
@@ -347,8 +333,7 @@ defmodule EExFormatterTest do
                      else
                        false
                      end
-                   %>"
-           >
+                   %>">
              <%
                if true do
                  "exp2"
