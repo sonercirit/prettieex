@@ -118,4 +118,11 @@ defmodule EExFormatter do
   def get_expressions(tokens) do
     tokens |> Enum.filter(fn token -> token |> is_expression() end)
   end
+
+  def prettify_expressions(expressions) do
+    expressions
+    |> Enum.map(fn expression ->
+      expression |> elem(3) |> to_string() |> Code.format_string!() |> Enum.join()
+    end)
+  end
 end

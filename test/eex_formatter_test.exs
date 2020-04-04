@@ -156,4 +156,21 @@ defmodule EExFormatterTest do
              {:expr, 3, '=', ' render @view_module, @view_template, assigns ', false}
            ]
   end
+
+  test "prettify tokenized expressions" do
+    html = """
+    <p class="alert alert-info" role="alert"><%= get_flash @conn, :info %></p>
+    <p class="alert alert-danger" role="alert"><%= get_flash @conn, :error %></p>
+    <%= render @view_module, @view_template, assigns %>
+    """
+
+    assert html
+           |> EExFormatter.tokenize()
+           |> EExFormatter.get_expressions()
+           |> EExFormatter.prettify_expressions() === [
+             "get_flash(@conn, :info)",
+             "get_flash(@conn, :error)",
+             "render(@view_module, @view_template, assigns)"
+           ]
+  end
 end
