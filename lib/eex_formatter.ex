@@ -2,8 +2,7 @@ defmodule EExFormatter do
   @moduledoc false
 
   def process_file(name) do
-    placeholder = generate_placeholder()
-    result = name |> File.read!() |> clean_eex(placeholder) |> parse_html() |> prettify_html()
+    result = name |> File.read!() |> clean_eex() |> parse_html() |> prettify_html()
 
     name |> File.write!(result)
   end
@@ -16,7 +15,7 @@ defmodule EExFormatter do
     :crypto.strong_rand_bytes(10) |> Base.encode32()
   end
 
-  def clean_eex(tag, placeholder) do
+  def clean_eex(tag, placeholder \\ "<placeholder/>") do
     tag |> String.replace(~r/<%[^#|%].*?%>/s, placeholder)
   end
 
@@ -81,7 +80,13 @@ defmodule EExFormatter do
   def prettify_tag(text, acc) do
     {indention, curr} = acc
     spaces = indention |> generate_spaces()
-    text = text |> String.trim() |> String.replace("\n", "\n#{spaces}")
+
+    text =
+      text
+      |> String.trim()
+      |> String.replace(~r/[^\S ]/s, " ")
+      |> String.replace(~r/  +/s, " ")
+
     {indention, "#{curr}#{spaces}#{text}\n"}
   end
 

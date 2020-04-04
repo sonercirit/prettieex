@@ -187,28 +187,26 @@ defmodule EExFormatterTest do
     """
 
     assert html
-           |> EExFormatter.clean_eex("1")
+           |> EExFormatter.clean_eex()
            |> EExFormatter.parse_html()
            |> EExFormatter.prettify_html() === """
            <p
              class="alert alert-info"
              role="alert"
            >
-             1
-             1
-             <%% "3" %>
-             <%# "4" %>
+             <placeholder/>
+             <placeholder/>
+             <%% "3" %> <%# "4" %>
            </p>
            <p
              class="alert alert-danger"
              role="alert"
            >
-             1
+             <placeholder/>
            </p>
-           1
-           1
-           <%% "3" %>
-           <%# "4" %>
+           <placeholder/>
+           <placeholder/>
+           <%% "3" %> <%# "4" %>
            """
   end
 
@@ -236,5 +234,24 @@ defmodule EExFormatterTest do
            |> EExFormatter.tokenize()
            |> EExFormatter.get_expressions()
            |> EExFormatter.prettify_expressions() === ["if true do\n  true\nelse\n  false\nend"]
+  end
+
+  test "squish multi-line text" do
+    html = """
+    <p>
+    A productive web framework that
+    <br/>
+    does not compromise speed <%# comment: here %>
+    or               maintainability.
+    </p>
+    """
+
+    assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === """
+           <p>
+             A productive web framework that
+             <br/>
+             does not compromise speed <%# comment: here %> or maintainability.
+           </p>
+           """
   end
 end
