@@ -370,4 +370,40 @@ defmodule EExFormatterTest do
            |> EExFormatter.generate_formattable_string()
            |> Code.format_string!()
   end
+
+  test "get scattered expressions" do
+    html = """
+    <div>
+    <section>
+    <%= case {1, 2, 3} do %>
+      <% {4, 5, 6} -> %>
+        This clause won't match
+      <% {1, x, 3} -> %>
+        <%= if true do %>
+        <% y = 1 + 2 + 3 %>
+        This clause will match and bind x to 2 in this clause
+        <% else %>
+        Never do this
+        <% end %>
+      <% _ -> %>
+        This clause would match any value
+    <% end %>
+    </section>
+    </div>
+    """
+
+    assert html
+           |> EExFormatter.tokenize()
+           |> EExFormatter.get_expressions() === [
+             {:start_expr, 3, '=', ' case {1, 2, 3} do ', false},
+             {:middle_expr, 4, [], ' {4, 5, 6} -> ', false},
+             {:middle_expr, 6, [], ' {1, x, 3} -> ', false},
+             {:start_expr, 7, '=', ' if true do ', false},
+             {:expr, 8, [], ' y = 1 + 2 + 3 ', false},
+             {:middle_expr, 10, [], ' else ', false},
+             {:end_expr, 12, [], ' end ', false},
+             {:middle_expr, 13, [], ' _ -> ', false},
+             {:end_expr, 15, [], ' end ', false}
+           ]
+  end
 end

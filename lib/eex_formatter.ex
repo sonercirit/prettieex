@@ -121,12 +121,12 @@ defmodule EExFormatter do
     result
   end
 
-  def is_expression({:expr, _, _, _, _}) do
-    true
+  def is_expression({:text, _}) do
+    false
   end
 
   def is_expression(_) do
-    false
+    true
   end
 
   def get_expressions(tokens) do
