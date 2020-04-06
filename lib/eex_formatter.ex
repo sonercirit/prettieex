@@ -68,11 +68,11 @@ defmodule EExFormatter do
     result = "#{spaces}<#{tag}"
 
     result =
-      if !(attributes === []) do
+      if attributes === [] do
+        result
+      else
         attributes = attributes |> prettify_attributes(indention + 2)
         result <> attributes
-      else
-        result
       end
 
     result =
