@@ -343,4 +343,31 @@ defmodule EExFormatterTest do
            </p>
            """
   end
+
+  test "generate string espaced html for feeding to formatter" do
+    html = """
+    <div>
+    <section>
+    <%= case {1, 2, 3} do %>
+      <% {4, 5, 6} -> %>
+        This clause won't match
+      <% {1, x, 3} -> %>
+        <%= if true do %>
+        <% y = 1 + 2 + 3 %>
+        This clause will match and bind x to 2 in this clause
+        <% else %>
+        Never do this
+        <% end %>
+      <% _ -> %>
+        This clause would match any value
+    <% end %>
+    </section>
+    </div>
+    """
+
+    assert html
+           |> EExFormatter.tokenize()
+           |> EExFormatter.generate_formattable_string()
+           |> Code.format_string!()
+  end
 end

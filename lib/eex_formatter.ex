@@ -216,4 +216,36 @@ defmodule EExFormatter do
 
     result
   end
+
+  def get_token_details({:text, text}) do
+    {:text, text}
+  end
+
+  def get_token_details({type, _, _, text, _}) do
+    {type, text}
+  end
+
+  def generate_text(token, acc) do
+    {type, text} = token |> get_token_details()
+    text = text |> to_string() |> String.trim()
+
+    case type do
+      :text ->
+        if text === "" do
+          acc
+        else
+          acc <> "\n\"" <> text <> "\""
+        end
+
+      _ ->
+        acc <> "\n" <> text
+    end
+  end
+
+  def generate_formattable_string(tokens) do
+    tokens
+    |> Enum.reduce("", fn token, acc ->
+      token |> generate_text(acc)
+    end)
+  end
 end
