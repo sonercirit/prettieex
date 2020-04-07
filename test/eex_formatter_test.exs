@@ -54,8 +54,8 @@ defmodule EExFormatterTest do
 
     assert parsed |> EExFormatter.prettify_html() === """
            <link
-             rel="stylesheet"
-             href="1"/>
+            rel="stylesheet"
+            href="1"/>
            """
   end
 
@@ -71,11 +71,11 @@ defmodule EExFormatterTest do
 
     assert prettified === """
            <a
-             href="https://phoenixframework.org/"
-             class="phx-logo">
+            href="https://phoenixframework.org/"
+            class="phx-logo">
              <img
-               src="1"
-               alt="Phoenix Framework Logo"/>
+              src="1"
+              alt="Phoenix Framework Logo"/>
            </a>
            """
   end
@@ -90,13 +90,13 @@ defmodule EExFormatterTest do
 
     assert prettified === """
            <section
-             class="container">
+            class="container">
              <nav
-               role="navigation">
+              role="navigation">
                <ul>
                  <li>
                    <a
-                     href="https://hexdocs.pm/phoenix/overview.html">
+                    href="https://hexdocs.pm/phoenix/overview.html">
                      Get Started
                    </a>
                  </li>
@@ -104,11 +104,11 @@ defmodule EExFormatterTest do
              </nav>
 
              <a
-               href="https://phoenixframework.org/"
-               class="phx-logo">
+              href="https://phoenixframework.org/"
+              class="phx-logo">
                <img
-                 src="1"
-                 alt="Phoenix Framework Logo"/>
+                src="1"
+                alt="Phoenix Framework Logo"/>
              </a>
            </section>
            """
@@ -125,7 +125,7 @@ defmodule EExFormatterTest do
     assert prettified === """
            <!DOCTYPE html>
            <html
-             lang="en"/>
+            lang="en"/>
            """
   end
 
@@ -187,8 +187,8 @@ defmodule EExFormatterTest do
            |> EExFormatter.parse_html()
            |> EExFormatter.prettify_html() === """
            <p
-             class="alert alert-info"
-             role="alert">
+            class="alert alert-info"
+            role="alert">
              <placeholder/>
 
              <placeholder/>
@@ -197,8 +197,8 @@ defmodule EExFormatterTest do
            </p>
 
            <p
-             class="alert alert-danger"
-             role="alert">
+            class="alert alert-danger"
+            role="alert">
              <placeholder/>
            </p>
 
@@ -283,8 +283,8 @@ defmodule EExFormatterTest do
            |> EExFormatter.prettify_html() === """
            <body>
              <script
-               type="text/javascript"
-               src="<placeholder/>"/>
+              type="text/javascript"
+              src="<placeholder/>"/>
            </body>
            """
   end
@@ -310,14 +310,14 @@ defmodule EExFormatterTest do
            |> EExFormatter.prettify_html()
            |> EExFormatter.replace_expressions(expressions) === """
            <p
-             class="alert alert-info"
-             role="<%= true %>">
+            class="alert alert-info"
+            role="<%= true %>">
              <%= get_flash(@conn, :info) %>
            </p>
 
            <p
-             class="alert alert-danger"
-             role="alert">
+            class="alert alert-danger"
+            role="alert">
              <%= get_flash(@conn, :error) %>
            </p>
 
@@ -344,14 +344,14 @@ defmodule EExFormatterTest do
            |> EExFormatter.prettify_html()
            |> EExFormatter.replace_expressions(expressions) === """
            <p
-             class="alert alert-info"
-             role="<%=
-                     if true do
-                       "exp1"
-                     else
-                       false
-                     end
-                   %>">
+            class="alert alert-info"
+            role="<%=
+                    if true do
+                      "exp1"
+                    else
+                      false
+                    end
+                  %>">
              <%
                if true do
                  "exp2"
