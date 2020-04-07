@@ -53,9 +53,7 @@ defmodule EExFormatter do
     1..len |> Enum.reduce("", fn _, acc -> acc <> " " end)
   end
 
-  def prettify_attributes(attributes, indention) do
-    spaces = indention |> generate_spaces()
-
+  def prettify_attributes(attributes, spaces) do
     attributes
     |> Enum.reduce("", fn attribute, attr_acc ->
       {tag, value} = attribute
@@ -63,16 +61,25 @@ defmodule EExFormatter do
     end)
   end
 
-  def prettify_tag({tag, attributes, children}, acc, indention) do
+  def get_prepend(index) do
+    if index === 0 do
+      ""
+    else
+      "\n"
+    end
+  end
+
+  def prettify_tag({{tag, attributes, children}, index}, acc, indention) do
     spaces = indention |> generate_spaces()
 
-    result = "#{spaces}<#{tag}"
+    prepend = index |> get_prepend()
+    result = "#{prepend}#{spaces}<#{tag}"
 
     result =
       if attributes === [] do
         result
       else
-        attributes = attributes |> prettify_attributes(indention + 2)
+        attributes = attributes |> prettify_attributes(spaces <> "  ")
         result <> attributes
       end
 
@@ -87,8 +94,9 @@ defmodule EExFormatter do
     acc <> result
   end
 
-  def prettify_tag(text, acc, indention) do
+  def prettify_tag({text, index}, acc, indention) do
     spaces = indention |> generate_spaces()
+    prepend = index |> get_prepend()
 
     text =
       text
@@ -96,7 +104,7 @@ defmodule EExFormatter do
       |> String.replace(~r/[^\S ]/s, " ")
       |> String.replace(~r/  +/s, " ")
 
-    "#{acc}#{spaces}#{text}\n"
+    "#{acc}#{prepend}#{spaces}#{text}\n"
   end
 
   def prettify_html({doctype, parsed}, indention \\ 0) do
@@ -108,6 +116,7 @@ defmodule EExFormatter do
       end
 
     parsed
+    |> Enum.with_index()
     |> Enum.reduce(initial, fn element, acc ->
       element |> prettify_tag(acc, indention)
     end)

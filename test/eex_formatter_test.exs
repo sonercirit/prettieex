@@ -102,6 +102,7 @@ defmodule EExFormatterTest do
                  </li>
                </ul>
              </nav>
+
              <a
                href="https://phoenixframework.org/"
                class="phx-logo">
@@ -189,16 +190,22 @@ defmodule EExFormatterTest do
              class="alert alert-info"
              role="alert">
              <placeholder/>
+
              <placeholder/>
+
              <%% "3" %> <%# "4" %>
            </p>
+
            <p
              class="alert alert-danger"
              role="alert">
              <placeholder/>
            </p>
+
            <placeholder/>
+
            <placeholder/>
+
            <%% "3" %> <%# "4" %>
            """
   end
@@ -257,7 +264,9 @@ defmodule EExFormatterTest do
     assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === """
            <p>
              A productive web framework that
+
              <br/>
+
              does not compromise speed <%# comment: here %> or maintainability.
            </p>
            """
@@ -305,11 +314,13 @@ defmodule EExFormatterTest do
              role="<%= true %>">
              <%= get_flash(@conn, :info) %>
            </p>
+
            <p
              class="alert alert-danger"
              role="alert">
              <%= get_flash(@conn, :error) %>
            </p>
+
            <% render(@view_module, @view_template, assigns) %>
            """
   end
