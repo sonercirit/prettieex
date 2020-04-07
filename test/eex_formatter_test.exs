@@ -210,10 +210,12 @@ defmodule EExFormatterTest do
     <%= render @view_module, @view_template, assigns %>
     """
 
-    assert html
-           |> EExFormatter.tokenize()
+    tokens = html |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
+    assert tokens
            |> EExFormatter.get_expressions()
-           |> EExFormatter.prettify_expressions() === [
+           |> EExFormatter.prettify_expressions(formattable_string) === [
              "<%= get_flash(@conn, :info) %>",
              "<%= get_flash(@conn, :error) %>",
              "<%= render(@view_module, @view_template, assigns) %>"
@@ -223,10 +225,12 @@ defmodule EExFormatterTest do
   test "prettify multi-line expression" do
     expr = "<%= if true do true else false end %>"
 
-    assert expr
-           |> EExFormatter.tokenize()
+    tokens = expr |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
+    assert tokens
            |> EExFormatter.get_expressions()
-           |> EExFormatter.prettify_expressions()
+           |> EExFormatter.prettify_expressions(formattable_string)
            |> sanitize_prettify_expression() === [
              """
              <%=
@@ -283,11 +287,13 @@ defmodule EExFormatterTest do
     <% render @view_module, @view_template, assigns %>
     """
 
+    tokens = html |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
     expressions =
-      html
-      |> EExFormatter.tokenize()
+      tokens
       |> EExFormatter.get_expressions()
-      |> EExFormatter.prettify_expressions()
+      |> EExFormatter.prettify_expressions(formattable_string)
 
     assert html
            |> EExFormatter.clean_eex()
@@ -313,11 +319,13 @@ defmodule EExFormatterTest do
     <p class="alert alert-info" role="<%= if true do "exp1" else false end %>"><% if true do "exp2" else false end %></p>
     """
 
+    tokens = html |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
     expressions =
-      html
-      |> EExFormatter.tokenize()
+      tokens
       |> EExFormatter.get_expressions()
-      |> EExFormatter.prettify_expressions()
+      |> EExFormatter.prettify_expressions(formattable_string)
 
     assert html
            |> EExFormatter.clean_eex()
@@ -404,6 +412,47 @@ defmodule EExFormatterTest do
              {:end_expr, 12, [], ' end ', false},
              {:middle_expr, 13, [], ' _ -> ', false},
              {:end_expr, 15, [], ' end ', false}
+           ]
+  end
+
+  test "prettifies scattered expressions" do
+    html = """
+    <div>
+    <section>
+    <%= case {1, 2, 3} do %>
+      <% {4, 5, 6} -> %>
+        This clause won't match
+      <% {1,x,3} -> %>
+        <%= if true do %>
+        <% y = 1+2+ 3 %>
+        This clause will match and bind x to 2 in this clause
+        <% else %>
+        Never do this
+        <% end %>
+      <% _ -> %>
+        This clause would match any value
+    <% end %>
+    <%= IO.puts "a" %>
+    </section>
+    </div>
+    """
+
+    tokens = html |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
+    assert tokens
+           |> EExFormatter.get_expressions()
+           |> EExFormatter.prettify_expressions(formattable_string) === [
+             "<%= case {1, 2, 3} do %>",
+             "<% {4, 5, 6} -> %>",
+             "<% {1, x, 3} -> %>",
+             "<%= if true do %>",
+             "<% y = 1 + 2 + 3 %>",
+             "<% else %>",
+             "<% end %>",
+             "<% _ -> %>",
+             "<% end %>",
+             "<%= IO.puts(\"a\") %>"
            ]
   end
 end

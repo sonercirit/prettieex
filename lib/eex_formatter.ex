@@ -4,11 +4,13 @@ defmodule EExFormatter do
   def process_file(name) do
     html = name |> File.read!()
 
+    tokens = html |> EExFormatter.tokenize()
+    formattable_string = tokens |> EExFormatter.generate_formattable_string()
+
     expressions =
-      html
-      |> EExFormatter.tokenize()
+      tokens
       |> EExFormatter.get_expressions()
-      |> EExFormatter.prettify_expressions()
+      |> EExFormatter.prettify_expressions(formattable_string)
 
     result =
       html |> clean_eex() |> parse_html() |> prettify_html() |> replace_expressions(expressions)
@@ -149,13 +151,27 @@ defmodule EExFormatter do
     end
   end
 
-  def prettify_expressions(expressions) do
+  def prettify_expressions(expressions, formattable_string) do
+    formatted_string = formattable_string |> Code.format_string!() |> Enum.join()
+
     expressions
     |> Enum.map(fn expression ->
       {pre, suff} = expression |> elem(2) |> get_expression_pre_suff()
 
-      prettified_expression =
-        expression |> elem(3) |> to_string() |> Code.format_string!() |> Enum.join()
+      regex =
+        expression
+        |> elem(3)
+        |> to_string()
+        |> String.replace(~r/\s/, "")
+        |> String.graphemes()
+        |> Enum.reduce("", fn letter, acc ->
+          acc <> (letter |> Regex.escape()) <> "[\\s|(|)]*?"
+        end)
+
+      regex = ~r/(.*)\[\\s\|\(\|\)\]\*/ |> Regex.run(regex) |> Enum.at(1)
+      regex = (regex <> "\\)?") |> Regex.compile!()
+
+      [prettified_expression | _] = regex |> Regex.run(formatted_string)
 
       if prettified_expression |> is_multiline_expression() do
         prettified_expression = prettified_expression |> String.replace("\n", "\n  ")
@@ -234,6 +250,7 @@ defmodule EExFormatter do
         if text === "" do
           acc
         else
+          text = text |> String.replace("\"", "\\\"")
           acc <> "\n\"" <> text <> "\""
         end
 
