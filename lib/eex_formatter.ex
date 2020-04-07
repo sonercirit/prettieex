@@ -63,8 +63,7 @@ defmodule EExFormatter do
     end)
   end
 
-  def prettify_tag({tag, attributes, children}, acc) do
-    {indention, curr} = acc
+  def prettify_tag({tag, attributes, children}, acc, indention) do
     spaces = indention |> generate_spaces()
 
     result = "#{spaces}<#{tag}"
@@ -85,11 +84,10 @@ defmodule EExFormatter do
         "#{result}>\n#{children}#{spaces}</#{tag}>\n"
       end
 
-    {indention, curr <> result}
+    acc <> result
   end
 
-  def prettify_tag(text, acc) do
-    {indention, curr} = acc
+  def prettify_tag(text, acc, indention) do
     spaces = indention |> generate_spaces()
 
     text =
@@ -98,7 +96,7 @@ defmodule EExFormatter do
       |> String.replace(~r/[^\S ]/s, " ")
       |> String.replace(~r/  +/s, " ")
 
-    {indention, "#{curr}#{spaces}#{text}\n"}
+    "#{acc}#{spaces}#{text}\n"
   end
 
   def prettify_html({doctype, parsed}, indention \\ 0) do
@@ -109,13 +107,10 @@ defmodule EExFormatter do
         "<!DOCTYPE #{doctype}>\n"
       end
 
-    {_, result} =
-      parsed
-      |> Enum.reduce({indention, initial}, fn element, acc ->
-        element |> prettify_tag(acc)
-      end)
-
-    result
+    parsed
+    |> Enum.reduce(initial, fn element, acc ->
+      element |> prettify_tag(acc, indention)
+    end)
   end
 
   def tokenize(html) do
