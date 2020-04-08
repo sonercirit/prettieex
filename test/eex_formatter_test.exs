@@ -466,4 +466,28 @@ defmodule EExFormatterTest do
              "<%= IO.puts(\"a\") %>"
            ]
   end
+
+  test "one-line multiline attributes" do
+    html = """
+    <div class="a
+    b"/>
+    """
+
+    assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === """
+           <div
+            class="a b"/>
+           """
+  end
+
+  test "clear extra spaces from attributes" do
+    html = """
+    <div class="a
+                b"/>
+    """
+
+    assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === """
+           <div
+            class="a b"/>
+           """
+  end
 end

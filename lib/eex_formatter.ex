@@ -53,10 +53,16 @@ defmodule EExFormatter do
     1..len |> Enum.reduce("", fn _, acc -> acc <> " " end)
   end
 
+  def clean_extra_whitespace(arg) do
+    arg |> String.replace(~r/\s+/s, " ")
+  end
+
   def prettify_attributes(attributes, spaces) do
     attributes
     |> Enum.reduce("", fn attribute, attr_acc ->
       {tag, value} = attribute
+      tag = tag |> clean_extra_whitespace()
+      value = value |> clean_extra_whitespace()
       "#{attr_acc}\n#{spaces}#{tag}=\"#{value}\""
     end)
   end
