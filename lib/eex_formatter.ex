@@ -61,7 +61,6 @@ defmodule EExFormatter do
     attributes
     |> Enum.reduce("", fn attribute, attr_acc ->
       {tag, value} = attribute
-      tag = tag |> clean_extra_whitespace()
       value = value |> clean_extra_whitespace()
       "#{attr_acc}\n#{spaces}#{tag}=\"#{value}\""
     end)
