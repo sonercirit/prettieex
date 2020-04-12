@@ -1,9 +1,7 @@
 defmodule EExFormatter do
   @moduledoc false
 
-  def process_file(name) do
-    html = name |> File.read!()
-
+  def process_string(html) do
     tokens = html |> EExFormatter.tokenize()
     formattable_string = tokens |> EExFormatter.generate_formattable_string()
 
@@ -12,8 +10,13 @@ defmodule EExFormatter do
       |> EExFormatter.get_expressions()
       |> EExFormatter.prettify_expressions(formattable_string)
 
-    result =
-      html |> clean_eex() |> parse_html() |> prettify_html() |> replace_expressions(expressions)
+    html |> clean_eex() |> parse_html() |> prettify_html() |> replace_expressions(expressions)
+  end
+
+  def process_file(name) do
+    html = name |> File.read!()
+
+    result = html |> process_string()
 
     name |> File.write!(result)
   end
