@@ -1,6 +1,6 @@
 # PrettiEEx
 
-**TODO: Add description**
+Prettifies EEx HTML files in an opinionated way. Prettifies both the HTML and the embedded Elixir code.
 
 ## Installation
 
