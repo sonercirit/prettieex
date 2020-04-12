@@ -9,7 +9,7 @@ The package can be installed by adding `prettieex` to your list of dependencies 
 ```elixir
 def deps do
   [
-    {:prettieex, github: "sonercirit/prettieex", ref: master}
+    {:prettieex, github: "sonercirit/prettieex", ref: "master", only: :dev}
   ]
 end
 ```
