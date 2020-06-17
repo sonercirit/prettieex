@@ -102,6 +102,10 @@ defmodule EExFormatter do
     acc <> result
   end
 
+  def prettify_tag({{:comment, text}, index}, acc, indentation) do
+    prettify_tag({"<!--" <> text <> "-->", index}, acc, indentation)
+  end
+
   def prettify_tag({text, index}, acc, indention) do
     spaces = indention |> generate_spaces()
     prepend = index |> get_prepend()
