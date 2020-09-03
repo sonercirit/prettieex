@@ -555,4 +555,24 @@ defmodule EExFormatterTest do
 
     assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === html
   end
+
+  test "html with comments" do
+    html = """
+    <div>some text</div>
+    <!-- very important commentary -->
+    <div>some other text</div>
+    """
+
+    assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === """
+           <div>
+             some text
+           </div>
+
+           <!-- very important commentary -->
+
+           <div>
+             some other text
+           </div>
+           """
+  end
 end
