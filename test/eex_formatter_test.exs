@@ -549,4 +549,10 @@ defmodule EExFormatterTest do
            </div>
            """
   end
+
+  test "handle html comments" do
+    html = "<!-- very important commentary -->\n"
+
+    assert html |> EExFormatter.parse_html() |> EExFormatter.prettify_html() === html
+  end
 end
